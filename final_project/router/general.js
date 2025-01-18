@@ -26,8 +26,21 @@ public_users.post("/register", (req,res) => {
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
    // Get the list of all books
-    const booksList = JSON.stringify(books, null, 4); // Neatly format the JSON output with 4 spaces indentation
-    return res.status(200).send(booksList); // Send the books as the response
+   // Simulate an Axios-like promise with local data
+   new Promise((resolve, reject) => {
+       if (books) {
+           resolve(books); // Resolve the books object
+        } else {
+            reject(new Error("Books data not found")); // Reject if books are unavailable
+        }
+    })
+    .then((books) => {
+        const booksList = JSON.stringify(books, null, 4); // Neatly format the JSON output with 4 spaces indentation
+        return res.status(200).send(booksList); // Send the books as the response
+    })
+    .catch((error) => {
+        res.status(500).json({ message: "Error fetching books", error: error.message });
+    });
 });
 
 // Get book details based on ISBN
