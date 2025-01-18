@@ -75,17 +75,22 @@ public_users.get('/isbn/:isbn',function (req, res) {
 public_users.get('/author/:author',function (req, res) {
   // Retrieve the author from the request parameters
   const author = req.params.author.toLowerCase().trim();
-
-  // Filter books based on the matching author
-  const matchingBooks = Object.values(books).filter(
-      (book) => book.author.toLowerCase() === author
-  );
-
-  if (matchingBooks.length > 0) {
-      return res.status(200).json(matchingBooks); // Send the list of books by the author
-  } else {
-      return res.status(404).json({ message: "No books found for the given author" }); // If no books are found
-  }
+  // Simulate a promise to fetch book details based on the author
+  new Promise((resolve, reject) => {
+        // Filter books based on the matching author
+        const matchingBooks = Object.values(books).filter(
+            (book) => book.author.toLowerCase() === author
+        );
+        if (matchingBooks.length > 0) resolve(matchingBooks); // Resolve with the list of matching books
+        else reject(new Error("No books found for the given author")); // Reject if no books are found
+    })
+    .then((matchingBooks) => {
+        if (matchingBooks.length > 0) return res.status(200).json(matchingBooks); // Send the list of books by the author
+        else return res.status(404).json({ message: "No books found for the given author" }); // If no books are found
+    })
+    .catch((error) => {
+        res.status(404).json({ message: error.message }); // Send error if no books are found
+    });
 });
 
 // Get all books based on title
